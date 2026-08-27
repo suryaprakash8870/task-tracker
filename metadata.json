@@ -1,0 +1,6 @@
+{
+  "name": "Team Task Tracker",
+  "description": "A clean, modern, lightweight team task management web application for creative and technical teams.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
