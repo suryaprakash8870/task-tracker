@@ -13,6 +13,7 @@ export type ViewMode =
   | 'suggestions'
   | 'activity'
   | 'team'
+  | 'ai-assistant'
   | 'settings';
 
 export interface User {
@@ -61,7 +62,8 @@ export interface TaskAttachment {
   name: string;
   size: string; // e.g. "2.4 MB"
   type: string; // e.g. "image/png", "application/pdf", "figma"
-  url: string;
+  url?: string;
+  storagePath: string; // Canonical Supabase Storage reference
   uploadedBy: string; // userId
   uploadedAt: string;
 }
@@ -125,3 +127,67 @@ export interface TaskFilter {
   label?: string;
   dueDateRange?: 'today' | 'upcoming' | 'overdue' | 'all';
 }
+
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+
+export interface ToastItem {
+  id: string;
+  type: ToastType;
+  title?: string;
+  message: string;
+  duration?: number;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
+
+export interface ConfirmDialogOptions {
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: 'danger' | 'warning' | 'primary';
+  onConfirm: () => void | Promise<void>;
+  onCancel?: () => void;
+}
+
+export interface AIChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+  toolCalls?: {
+    name: string;
+    args: Record<string, any>;
+    result?: Record<string, any>;
+    status: 'success' | 'error' | 'ambiguous';
+  }[];
+  structuredData?: {
+    type: 'checklist' | 'summary' | 'task_preview' | 'suggestion';
+    items?: string[];
+    details?: Record<string, any>;
+  };
+}
+
+export type AITaskHelpAction =
+  | 'summarize'
+  | 'next_steps'
+  | 'blockers'
+  | 'improve_description'
+  | 'generate_checklist'
+  | 'suggest_teammate'
+  | 'summarize_comments';
+
+export interface AIUsageSummary {
+  provider: string;
+  model: string;
+  status: 'available' | 'limited' | 'unavailable';
+  statusMessage: string;
+  totalRequests: number;
+  todayRequests: number;
+  successfulRequests: number;
+  lastUsedAt: string | null;
+  supportedToolsCount: number;
+}
+

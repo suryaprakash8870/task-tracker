@@ -98,30 +98,30 @@ export const CalendarView: React.FC = () => {
   return (
     <div id="calendar-view" className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
       {/* Calendar Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
             <button
               onClick={handlePrevMonth}
-              className="p-1.5 hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-white text-slate-600 rounded-lg transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleToday}
-              className="px-2.5 py-1 text-xs font-semibold hover:bg-white dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg transition-colors"
+              className="px-2.5 py-1 text-xs font-semibold hover:bg-white text-slate-800 rounded-lg transition-colors"
             >
               Today
             </button>
             <button
               onClick={handleNextMonth}
-              className="p-1.5 hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-white text-slate-600 rounded-lg transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-bold text-slate-900">
             {monthNames[currentMonth]} {currentYear}
           </h3>
         </div>
@@ -136,8 +136,8 @@ export const CalendarView: React.FC = () => {
       </div>
 
       {/* Weekday headers */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 text-center py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 text-center py-2.5 text-xs font-semibold text-slate-600">
           <div>Sun</div>
           <div>Mon</div>
           <div>Tue</div>
@@ -148,7 +148,7 @@ export const CalendarView: React.FC = () => {
         </div>
 
         {/* Days grid */}
-        <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 dark:divide-slate-800/80">
+        <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100">
           {days.map((d, index) => {
             const dateTasks = getTasksForDate(d.year, d.month, d.day);
             const today = isToday(d.year, d.month, d.day);
@@ -158,9 +158,9 @@ export const CalendarView: React.FC = () => {
                 key={index}
                 className={`min-h-[105px] sm:min-h-[125px] p-2 transition-colors ${
                   !d.isCurrentMonth
-                    ? 'bg-slate-50/40 dark:bg-slate-950/20 text-slate-400 dark:text-slate-600'
-                    : 'bg-white dark:bg-slate-900'
-                } ${today ? 'ring-2 ring-blue-600 ring-inset bg-blue-50/20 dark:bg-blue-950/20' : ''}`}
+                    ? 'bg-slate-50/60 text-slate-400'
+                    : 'bg-white'
+                } ${today ? 'ring-2 ring-blue-600 ring-inset bg-blue-50/30' : ''}`}
               >
                 <div className="flex items-center justify-between mb-1.5">
                   <span
@@ -168,7 +168,7 @@ export const CalendarView: React.FC = () => {
                       today
                         ? 'bg-blue-600 text-white'
                         : d.isCurrentMonth
-                        ? 'text-slate-800 dark:text-slate-200'
+                        ? 'text-slate-800'
                         : 'text-slate-400'
                     }`}
                   >
@@ -176,7 +176,7 @@ export const CalendarView: React.FC = () => {
                   </span>
 
                   {dateTasks.length > 0 && (
-                    <span className="text-[10px] text-slate-400 font-medium hidden sm:inline">
+                    <span className="text-[10px] text-slate-500 font-medium hidden sm:inline">
                       {dateTasks.length} {dateTasks.length === 1 ? 'task' : 'tasks'}
                     </span>
                   )}
@@ -186,10 +186,10 @@ export const CalendarView: React.FC = () => {
                 <div className="space-y-1 overflow-y-auto max-h-[85px] pr-0.5">
                   {dateTasks.map(task => {
                     const statusColors = {
-                      todo: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
-                      in_progress: 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-                      review: 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-                      done: 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 line-through opacity-70'
+                      todo: 'bg-slate-100 text-slate-700 border-slate-200',
+                      in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
+                      review: 'bg-amber-50 text-amber-700 border-amber-200',
+                      done: 'bg-emerald-50 text-emerald-700 border-emerald-200 line-through opacity-70'
                     };
 
                     return (

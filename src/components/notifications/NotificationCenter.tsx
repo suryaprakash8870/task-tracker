@@ -80,16 +80,16 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
   return (
     <div
       id="notification-center-dropdown"
-      className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden flex flex-col max-h-[500px]"
+      className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 overflow-hidden flex flex-col max-h-[500px]"
     >
       {/* Header */}
-      <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+      <div className="p-3.5 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100">
+          <h3 className="font-semibold text-sm text-slate-900">
             Notifications
           </h3>
           {notifications.filter(n => !n.read).length > 0 && (
-            <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full">
+            <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 text-blue-700 rounded-full">
               {notifications.filter(n => !n.read).length} new
             </span>
           )}
@@ -100,14 +100,14 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
             id="mark-all-read-btn"
             onClick={() => markAllNotificationsAsRead()}
             title="Mark all as read"
-            className="p-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 text-xs flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+            className="p-1 text-slate-500 hover:text-slate-800 text-xs flex items-center gap-1 hover:bg-slate-100 rounded transition-colors"
           >
             <CheckCheck className="w-3.5 h-3.5" />
             <span className="hidden sm:inline text-[11px]">Mark all read</span>
           </button>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded"
+            className="p-1 text-slate-400 hover:text-slate-600 rounded"
           >
             <X className="w-4 h-4" />
           </button>
@@ -115,13 +115,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
       </div>
 
       {/* Filter Tabs */}
-      <div className="px-3 py-1.5 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 text-xs">
+      <div className="px-3 py-1.5 bg-slate-50/70 border-b border-slate-100 flex items-center gap-2 text-xs">
         <button
           onClick={() => setFilter('all')}
           className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
             filter === 'all'
-              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs border border-slate-200/80 dark:border-slate-700'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           All ({notifications.length})
@@ -130,8 +130,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
           onClick={() => setFilter('unread')}
           className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
             filter === 'unread'
-              ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-xs border border-slate-200/80 dark:border-slate-700'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+              ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           Unread ({notifications.filter(n => !n.read).length})
@@ -139,9 +139,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
       </div>
 
       {/* Notifications List */}
-      <div className="overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 max-h-96">
+      <div className="overflow-y-auto divide-y divide-slate-100 max-h-96">
         {filteredNotifications.length === 0 ? (
-          <div className="py-12 text-center text-slate-400 dark:text-slate-500 text-xs">
+          <div className="py-12 text-center text-slate-400 text-xs">
             No {filter === 'unread' ? 'unread ' : ''}notifications yet
           </div>
         ) : (
@@ -151,31 +151,31 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
               <div
                 key={notif.id}
                 onClick={() => handleNotificationClick(notif)}
-                className={`p-3 transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60 flex items-start gap-3 relative ${
-                  !notif.read ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
+                className={`p-3 transition-colors cursor-pointer hover:bg-slate-50 flex items-start gap-3 relative ${
+                  !notif.read ? 'bg-blue-50/30' : ''
                 }`}
               >
                 {!notif.read && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 absolute top-4 left-1.5" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-600 absolute top-4 left-1.5" />
                 )}
 
                 <div className="relative flex-shrink-0">
                   <Avatar user={actor} size="sm" />
-                  <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-white dark:bg-slate-900 shadow-xs border border-slate-100 dark:border-slate-800">
+                  <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-white shadow-xs border border-slate-100">
                     {getIcon(notif.type)}
                   </div>
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                    <p className="text-xs font-semibold text-slate-800 truncate">
                       {notif.title}
                     </p>
                     <span className="text-[10px] text-slate-400 flex-shrink-0">
                       {formatTime(notif.createdAt)}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                     {notif.message}
                   </p>
                 </div>

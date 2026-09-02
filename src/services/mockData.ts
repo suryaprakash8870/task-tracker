@@ -76,8 +76,8 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1', // Surya
     dueDate: getRelativeDate(1), // Tomorrow
     labels: [
-      { id: 'l-1', name: 'Design', color: 'bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800' },
-      { id: 'l-2', name: 'UI Tokens', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' }
+      { id: 'l-1', name: 'Design', color: 'bg-purple-100 text-purple-700 border-purple-200' },
+      { id: 'l-2', name: 'UI Tokens', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' }
     ],
     subtasks: [
       { id: 'st-1', title: 'Audit existing palette and semantic hex codes', completed: true },
@@ -107,6 +107,7 @@ export const initialTasks: Task[] = [
         name: 'Design-Tokens-v2.fig',
         size: '4.8 MB',
         type: 'figma',
+        storagePath: 'ws-1/task-101/Design-Tokens-v2.fig',
         url: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&auto=format&fit=crop&q=80',
         uploadedBy: 'user-3',
         uploadedAt: '2026-08-25T11:00:00Z'
@@ -117,6 +118,7 @@ export const initialTasks: Task[] = [
         name: 'Color-Palette-Contrast-Spec.pdf',
         size: '1.2 MB',
         type: 'application/pdf',
+        storagePath: 'ws-1/task-101/Color-Palette-Contrast-Spec.pdf',
         url: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&auto=format&fit=crop&q=80',
         uploadedBy: 'user-3',
         uploadedAt: '2026-08-25T14:20:00Z'
@@ -180,8 +182,8 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1', // Surya
     dueDate: getRelativeDate(0), // Today!
     labels: [
-      { id: 'l-3', name: 'Frontend', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800' },
-      { id: 'l-1', name: 'Design', color: 'bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800' }
+      { id: 'l-3', name: 'Frontend', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+      { id: 'l-1', name: 'Design', color: 'bg-purple-100 text-purple-700 border-purple-200' }
     ],
     subtasks: [
       { id: 'st-5', title: 'Code responsive navigation bar', completed: true },
@@ -205,6 +207,7 @@ export const initialTasks: Task[] = [
         name: 'Hero-Mockup-4K.png',
         size: '3.4 MB',
         type: 'image/png',
+        storagePath: 'ws-1/task-102/Hero-Mockup-4K.png',
         url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
         uploadedBy: 'user-3',
         uploadedAt: '2026-08-25T10:15:00Z'
@@ -252,8 +255,8 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1', // Surya
     dueDate: getRelativeDate(3),
     labels: [
-      { id: 'l-4', name: 'Backend', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' },
-      { id: 'l-5', name: 'Security', color: 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800' }
+      { id: 'l-4', name: 'Backend', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+      { id: 'l-5', name: 'Security', color: 'bg-rose-100 text-rose-700 border-rose-200' }
     ],
     subtasks: [
       { id: 'st-9', title: 'Define standardized JWT claims schema', completed: false },
@@ -288,8 +291,8 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1', // Surya
     dueDate: getRelativeDate(-1), // Overdue by 1 day!
     labels: [
-      { id: 'l-6', name: 'QA', color: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800' },
-      { id: 'l-7', name: 'DevOps', color: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800' }
+      { id: 'l-6', name: 'QA', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+      { id: 'l-7', name: 'DevOps', color: 'bg-cyan-100 text-cyan-700 border-cyan-200' }
     ],
     subtasks: [
       { id: 'st-12', title: 'Configure Playwright test runner in CI', completed: true },
@@ -313,6 +316,7 @@ export const initialTasks: Task[] = [
         name: 'e2e-coverage-report.html',
         size: '1.8 MB',
         type: 'text/html',
+        storagePath: 'ws-1/task-104/e2e-coverage-report.html',
         url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
         uploadedBy: 'user-5',
         uploadedAt: '2026-08-26T16:50:00Z'
@@ -353,7 +357,7 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1',
     dueDate: getRelativeDate(-2), // Completed 2 days ago
     labels: [
-      { id: 'l-3', name: 'Frontend', color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800' }
+      { id: 'l-3', name: 'Frontend', color: 'bg-blue-100 text-blue-700 border-blue-200' }
     ],
     subtasks: [
       { id: 'st-16', title: 'Build team member list with role chips', completed: true },
@@ -395,7 +399,7 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1',
     dueDate: getRelativeDate(5),
     labels: [
-      { id: 'l-4', name: 'Backend', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' }
+      { id: 'l-4', name: 'Backend', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' }
     ],
     subtasks: [
       { id: 'st-19', title: 'Create storage client abstraction layer', completed: false },
@@ -429,7 +433,7 @@ export const initialTasks: Task[] = [
     creatorId: 'user-1',
     dueDate: getRelativeDate(2),
     labels: [
-      { id: 'l-8', name: 'Planning', color: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800' }
+      { id: 'l-8', name: 'Planning', color: 'bg-amber-100 text-amber-700 border-amber-200' }
     ],
     subtasks: [
       { id: 'st-21', title: 'Gather completed sprint statistics', completed: true },
@@ -445,6 +449,7 @@ export const initialTasks: Task[] = [
         name: 'Roadmap-Deck-Q4.pdf',
         size: '5.2 MB',
         type: 'application/pdf',
+        storagePath: 'ws-1/task-107/Roadmap-Deck-Q4.pdf',
         url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&auto=format&fit=crop&q=80',
         uploadedBy: 'user-1',
         uploadedAt: '2026-08-26T12:00:00Z'

@@ -50,11 +50,11 @@ export const Avatar: React.FC<AvatarProps> = ({
           src={photo}
           alt={displayName}
           referrerPolicy="no-referrer"
-          className={`${sizeClasses[size]} rounded-full object-cover ring-1 ring-black/5 dark:ring-white/10`}
+          className={`${sizeClasses[size]} rounded-full object-cover ring-1 ring-black/5`}
         />
       ) : (
         <div
-          className={`${sizeClasses[size]} rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-medium ring-1 ring-black/5 dark:ring-white/10 select-none`}
+          className={`${sizeClasses[size]} rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-medium ring-1 ring-black/5 select-none`}
         >
           {initials}
         </div>

@@ -1,6 +1,8 @@
 {
   "name": "Team Task Tracker",
-  "description": "A clean, modern, lightweight team task management web application for creative and technical teams.",
+  "description": "A clean, modern team task management web application with AI assistant, real-time sync, credit system, and Excel & PDF executive managerial reports.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

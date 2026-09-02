@@ -1,16 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { aiCreditService, AICreditState } from '../../services/aiCreditService';
 import { Avatar } from '../common/Avatar';
 import { NotificationCenter } from '../notifications/NotificationCenter';
+import { ExportReportModal } from '../common/ExportReportModal';
 import {
   Menu,
   Search,
   Plus,
   Bell,
-  Sun,
-  Moon,
-  Users,
-  X
+  X,
+  Sparkles,
+  Zap,
+  Radio,
+  Download,
+  FileSpreadsheet
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -20,19 +24,25 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
   const {
     currentView,
+    setCurrentView,
     searchQuery,
     setSearchQuery,
     unreadNotificationCount,
-    theme,
-    toggleTheme,
     currentUser,
     setIsNewTaskModalOpen,
     setIsAuthModalOpen,
-    tasks
+    realtimeStatus
   } = useApp();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [credits, setCredits] = useState<AICreditState>(() => aiCreditService.getCredits());
   const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsub = aiCreditService.subscribe(setCredits);
+    return unsub;
+  }, []);
 
   // Close notifications if clicked outside
   useEffect(() => {
@@ -46,15 +56,16 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
   }, []);
 
   const titles: Record<string, { title: string; subtitle: string }> = {
-    dashboard: { title: 'Dashboard', subtitle: 'Overview of your tasks, team workload, and priorities' },
-    'my-tasks': { title: 'My Tasks', subtitle: 'Items assigned to you sorted by urgency and status' },
-    board: { title: 'Team Kanban Board', subtitle: 'Live status tracking across all team initiatives' },
-    calendar: { title: 'Calendar & Deadlines', subtitle: 'Visual timeline and scheduled task milestones' },
-    files: { title: 'Project Files', subtitle: 'All design mockups, specs, and attachments across tasks' },
-    suggestions: { title: 'Suggestions Hub', subtitle: 'Ideas, recommendations, and reviews from team members' },
-    activity: { title: 'Team Activity', subtitle: 'Chronological audit feed of status updates and assignments' },
-    team: { title: 'Team Workspace', subtitle: 'Members, roles, assignments, and workload breakdown' },
-    settings: { title: 'Settings', subtitle: 'Workspace preferences, user profile, and data management' },
+    dashboard: { title: 'Dashboard', subtitle: 'Overview of team workload and priorities' },
+    'ai-assistant': { title: 'AI Assistant', subtitle: 'Natural task chat, automated updates & tool workflows' },
+    'my-tasks': { title: 'My Tasks', subtitle: 'Assigned to you sorted by urgency and status' },
+    board: { title: 'Team Board', subtitle: 'Live status tracking across all team initiatives' },
+    calendar: { title: 'Calendar & Deadlines', subtitle: 'Visual timeline and scheduled milestones' },
+    files: { title: 'Project Files', subtitle: 'Design mockups, specs, and attachments' },
+    suggestions: { title: 'Suggestions Hub', subtitle: 'Ideas, recommendations, and reviews' },
+    activity: { title: 'Team Activity', subtitle: 'Chronological audit feed of changes' },
+    team: { title: 'Team Workspace', subtitle: 'Members, roles, and workload breakdown' },
+    settings: { title: 'Settings', subtitle: 'Workspace preferences and configuration' },
   };
 
   const currentInfo = titles[currentView] || { title: 'Overview', subtitle: 'Team Task Tracker' };
@@ -62,25 +73,25 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
   return (
     <header
       id="app-header"
-      className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors"
+      className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-colors"
     >
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 gap-4">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 gap-4">
         {/* Left: Mobile trigger & view title */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             id="mobile-menu-trigger"
             onClick={onToggleMobileMenu}
-            className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg lg:hidden"
+            className="p-1.5 text-zinc-600 hover:bg-zinc-100 rounded-md lg:hidden"
             aria-label="Toggle navigation menu"
           >
             <Menu className="w-5 h-5" />
           </button>
 
           <div className="min-w-0">
-            <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 tracking-tight truncate">
+            <h2 className="text-sm sm:text-base font-bold text-zinc-900 tracking-tight truncate">
               {currentInfo.title}
             </h2>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block truncate">
+            <p className="text-[11px] text-zinc-500 hidden sm:block truncate">
               {currentInfo.subtitle}
             </p>
           </div>
@@ -89,63 +100,114 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
         {/* Center: Quick Search Bar */}
         <div className="flex-1 max-w-md hidden md:block">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               id="global-search-input"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search tasks, labels, descriptions... (Press / to focus)"
-              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-100/80 dark:bg-slate-800/80 border border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-lg placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500 transition-all"
+              placeholder="Search tasks, labels, assignees..."
+              className="w-full pl-8.5 pr-8 py-1.5 text-xs bg-zinc-100/80 hover:bg-zinc-100 focus:bg-white border border-transparent focus:border-zinc-300 text-zinc-900 rounded-md placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-zinc-900/10 transition-all font-normal"
             />
-            {searchQuery && (
+            {searchQuery ? (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
+            ) : (
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                <kbd className="text-[10px] font-mono text-zinc-400 bg-zinc-200/60 px-1 py-0.5 rounded border border-zinc-200">
+                  /
+                </kbd>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Right Actions: New Task, Theme, Notifications, User */}
+        {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Live Realtime Indicator */}
+          <div
+            id="realtime-status-badge"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-50 border border-zinc-200/80 text-[11px] font-medium text-zinc-600"
+            title={
+              realtimeStatus === 'CONNECTED'
+                ? 'Supabase Realtime is actively listening for live database changes'
+                : realtimeStatus === 'CONNECTING'
+                ? 'Connecting to Realtime channel...'
+                : 'Realtime is offline / reconnecting'
+            }
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                realtimeStatus === 'CONNECTED'
+                  ? 'bg-emerald-500 ring-3 ring-emerald-500/20'
+                  : realtimeStatus === 'CONNECTING'
+                  ? 'bg-amber-400 ring-3 ring-amber-400/20'
+                  : 'bg-zinc-400'
+              }`}
+            />
+            <span className="text-zinc-600 text-[11px]">
+              {realtimeStatus === 'CONNECTED'
+                ? 'Synced'
+                : realtimeStatus === 'CONNECTING'
+                ? 'Syncing'
+                : 'Offline'}
+            </span>
+          </div>
+
+          {/* AI Assistant Quick Nav Button */}
+          <button
+            id="header-ai-assistant-btn"
+            onClick={() => setCurrentView('ai-assistant')}
+            className={`flex items-center gap-1.5 py-1.5 px-2.5 rounded-md text-xs font-semibold border transition-all cursor-pointer ${
+              currentView === 'ai-assistant'
+                ? 'bg-indigo-50 text-indigo-700 border-indigo-200 shadow-2xs'
+                : 'bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-200 shadow-2xs hover:border-zinc-300'
+            }`}
+            title={`Open AI Assistant (${credits.remaining} daily credits remaining)`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+            <span className="hidden sm:inline">AI Chat</span>
+            <span className="font-mono text-[10px] px-1 py-0.2 rounded bg-zinc-100 text-zinc-600 border border-zinc-200/60 hidden md:inline">
+              {credits.remaining}⚡
+            </span>
+          </button>
+
+          {/* Export Workload Report Button */}
+          <button
+            id="header-export-report-btn"
+            onClick={() => setIsExportModalOpen(true)}
+            className="hidden sm:flex items-center gap-1.5 py-1.5 px-2.5 bg-white hover:bg-zinc-50 active:bg-zinc-100 text-zinc-700 rounded-md text-xs font-semibold border border-zinc-200 shadow-2xs transition-all cursor-pointer hover:border-zinc-300"
+            title="Export Team Workload to Excel or PDF for Manager review"
+          >
+            <Download className="w-3.5 h-3.5 text-zinc-500" />
+            <span className="hidden md:inline">Export</span>
+          </button>
+
           {/* Create Task Button */}
           <button
             id="header-create-task-btn"
             onClick={() => setIsNewTaskModalOpen(true)}
-            className="flex items-center gap-1.5 py-1.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs shadow-blue-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="flex items-center gap-1.5 py-1.5 px-3 bg-zinc-900 hover:bg-zinc-800 active:bg-black text-white rounded-md text-xs font-semibold shadow-2xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span className="hidden sm:inline">New Task</span>
           </button>
 
-          {/* Theme Toggle */}
-          <button
-            id="theme-toggle-btn"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400" />
-            ) : (
-              <Moon className="w-4 h-4 text-slate-600" />
-            )}
-          </button>
-
-          {/* Notification Bell with Dropdown */}
+          {/* Notification Bell */}
           <div className="relative" ref={notifRef}>
             <button
               id="notification-bell-btn"
               onClick={() => setIsNotifOpen(!isNotifOpen)}
-              className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors relative"
+              className="p-1.5 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 rounded-md transition-colors relative cursor-pointer"
               aria-label="View notifications"
             >
               <Bell className="w-4 h-4" />
               {unreadNotificationCount > 0 && (
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-slate-900" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
               )}
             </button>
 
@@ -156,7 +218,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
           <button
             id="header-profile-btn"
             onClick={() => setIsAuthModalOpen(true)}
-            className="flex items-center gap-2 p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 p-0.5 hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
             title={`Active: ${currentUser.name} (${currentUser.role})`}
           >
             <Avatar user={currentUser} size="sm" showRoleBadge />
@@ -167,24 +229,30 @@ export const Header: React.FC<HeaderProps> = ({ onToggleMobileMenu }) => {
       {/* Mobile search bar */}
       <div className="px-4 pb-2.5 md:hidden">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search all tasks..."
-            className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-100 dark:bg-slate-800 border border-transparent rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-hidden"
+            className="w-full pl-8 pr-8 py-1.5 text-xs bg-zinc-100 border border-zinc-200 rounded-md text-zinc-900 placeholder-zinc-400 focus:outline-hidden"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
       </div>
+
+      <ExportReportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+      />
     </header>
   );
 };
+

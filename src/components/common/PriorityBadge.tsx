@@ -1,6 +1,6 @@
 import React from 'react';
 import { TaskPriority, TaskStatus } from '../../types';
-import { ArrowUp, ArrowDown, Minus, Flame, CircleDot, Clock, CheckCircle2, Eye } from 'lucide-react';
+import { Flame, ArrowUp, Minus, ArrowDown, CircleDot, Clock, Eye, CheckCircle2 } from 'lucide-react';
 
 interface PriorityBadgeProps {
   priority: TaskPriority;
@@ -13,43 +13,47 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   size = 'md',
   showIcon = true
 }) => {
-  const configs: Record<TaskPriority, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
+  const configs: Record<TaskPriority, { label: string; bg: string; text: string; border: string; dot: string; icon: React.ReactNode }> = {
     urgent: {
       label: 'Urgent',
-      bg: 'bg-rose-50 dark:bg-rose-950/40',
-      text: 'text-rose-700 dark:text-rose-300',
-      border: 'border-rose-200 dark:border-rose-800/60',
-      icon: <Flame className="w-3.5 h-3.5" />
+      bg: 'bg-rose-50/80',
+      text: 'text-rose-700',
+      border: 'border-rose-200/80',
+      dot: 'bg-rose-500',
+      icon: <Flame className="w-3 h-3 text-rose-600" />
     },
     high: {
       label: 'High',
-      bg: 'bg-orange-50 dark:bg-orange-950/40',
-      text: 'text-orange-700 dark:text-orange-300',
-      border: 'border-orange-200 dark:border-orange-800/60',
-      icon: <ArrowUp className="w-3.5 h-3.5" />
+      bg: 'bg-amber-50/80',
+      text: 'text-amber-800',
+      border: 'border-amber-200/80',
+      dot: 'bg-amber-500',
+      icon: <ArrowUp className="w-3 h-3 text-amber-600" />
     },
     medium: {
       label: 'Medium',
-      bg: 'bg-blue-50 dark:bg-blue-950/40',
-      text: 'text-blue-700 dark:text-blue-300',
-      border: 'border-blue-200 dark:border-blue-800/60',
-      icon: <Minus className="w-3.5 h-3.5" />
+      bg: 'bg-blue-50/70',
+      text: 'text-blue-700',
+      border: 'border-blue-200/70',
+      dot: 'bg-blue-500',
+      icon: <Minus className="w-3 h-3 text-blue-600" />
     },
     low: {
       label: 'Low',
-      bg: 'bg-slate-100 dark:bg-slate-800/60',
-      text: 'text-slate-600 dark:text-slate-400',
-      border: 'border-slate-200 dark:border-slate-700',
-      icon: <ArrowDown className="w-3.5 h-3.5" />
+      bg: 'bg-zinc-100/80',
+      text: 'text-zinc-700',
+      border: 'border-zinc-200/80',
+      dot: 'bg-zinc-400',
+      icon: <ArrowDown className="w-3 h-3 text-zinc-500" />
     }
   };
 
   const config = configs[priority] || configs.medium;
-  const sizeClasses = size === 'sm' ? 'px-1.5 py-0.5 text-[11px] gap-1' : 'px-2 py-0.5 text-xs gap-1.5';
+  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[11px] gap-1.5' : 'px-2.5 py-0.5 text-xs gap-1.5';
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-md border ${sizeClasses} ${config.bg} ${config.text} ${config.border}`}
+      className={`inline-flex items-center font-medium rounded-md border tracking-tight shadow-2xs ${sizeClasses} ${config.bg} ${config.text} ${config.border}`}
     >
       {showIcon && config.icon}
       <span>{config.label}</span>
@@ -66,43 +70,44 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
   const configs: Record<TaskStatus, { label: string; bg: string; text: string; border: string; icon: React.ReactNode }> = {
     todo: {
       label: 'Todo',
-      bg: 'bg-slate-100 dark:bg-slate-800',
-      text: 'text-slate-700 dark:text-slate-300',
-      border: 'border-slate-200 dark:border-slate-700',
-      icon: <CircleDot className="w-3.5 h-3.5 text-slate-500" />
+      bg: 'bg-zinc-100',
+      text: 'text-zinc-700',
+      border: 'border-zinc-200',
+      icon: <CircleDot className="w-3 h-3 text-zinc-500" />
     },
     in_progress: {
       label: 'In Progress',
-      bg: 'bg-blue-50 dark:bg-blue-950/50',
-      text: 'text-blue-700 dark:text-blue-300',
-      border: 'border-blue-200 dark:border-blue-800',
-      icon: <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+      bg: 'bg-blue-50',
+      text: 'text-blue-700',
+      border: 'border-blue-200/80',
+      icon: <Clock className="w-3 h-3 text-blue-600" />
     },
     review: {
-      label: 'Review',
-      bg: 'bg-amber-50 dark:bg-amber-950/50',
-      text: 'text-amber-700 dark:text-amber-300',
-      border: 'border-amber-200 dark:border-amber-800',
-      icon: <Eye className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+      label: 'In Review',
+      bg: 'bg-amber-50',
+      text: 'text-amber-800',
+      border: 'border-amber-200/80',
+      icon: <Eye className="w-3 h-3 text-amber-600" />
     },
     done: {
-      label: 'Done',
-      bg: 'bg-emerald-50 dark:bg-emerald-950/50',
-      text: 'text-emerald-700 dark:text-emerald-300',
-      border: 'border-emerald-200 dark:border-emerald-800',
-      icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+      label: 'Completed',
+      bg: 'bg-emerald-50',
+      text: 'text-emerald-700',
+      border: 'border-emerald-200/80',
+      icon: <CheckCircle2 className="w-3 h-3 text-emerald-600" />
     }
   };
 
   const config = configs[status] || configs.todo;
-  const sizeClasses = size === 'sm' ? 'px-1.5 py-0.5 text-[11px] gap-1' : 'px-2 py-0.5 text-xs gap-1.5';
+  const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-[11px] gap-1.5' : 'px-2.5 py-0.5 text-xs gap-1.5';
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-md border ${sizeClasses} ${config.bg} ${config.text} ${config.border}`}
+      className={`inline-flex items-center font-medium rounded-md border tracking-tight shadow-2xs ${sizeClasses} ${config.bg} ${config.text} ${config.border}`}
     >
       {config.icon}
       <span>{config.label}</span>
     </span>
   );
 };
+

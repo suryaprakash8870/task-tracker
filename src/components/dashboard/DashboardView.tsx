@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Avatar } from '../common/Avatar';
 import { PriorityBadge, StatusBadge } from '../common/PriorityBadge';
-import { Task } from '../../types';
+import { ExportReportModal } from '../common/ExportReportModal';
 import {
   CheckSquare,
   Clock,
@@ -12,10 +12,11 @@ import {
   Activity as ActivityIcon,
   Lightbulb,
   ArrowRight,
-  PlusCircle,
-  TrendingUp,
-  FolderClosed,
-  ChevronRight
+  Plus,
+  Sparkles,
+  ChevronRight,
+  ArrowUpRight,
+  Download
 } from 'lucide-react';
 
 export const DashboardView: React.FC = () => {
@@ -29,8 +30,9 @@ export const DashboardView: React.FC = () => {
     searchQuery
   } = useApp();
 
-  // Helper date calculations
-  const todayStr = '2026-08-27'; // Consistent relative date based on current anchor
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  const todayStr = '2026-08-27';
 
   // Filter tasks based on global search if any
   const filteredTasks = tasks.filter(t => {
@@ -43,29 +45,18 @@ export const DashboardView: React.FC = () => {
     );
   });
 
-  // Metric 1: My Tasks (Open)
   const myTasks = filteredTasks.filter(t => t.assigneeId === currentUser.id);
   const myOpenTasks = myTasks.filter(t => t.status !== 'done');
-
-  // Metric 2: Due Today
   const dueTodayTasks = filteredTasks.filter(t => t.dueDate === todayStr && t.status !== 'done');
-
-  // Metric 3: Overdue
   const overdueTasks = filteredTasks.filter(t => t.dueDate < todayStr && t.status !== 'done');
-
-  // Metric 4: Upcoming
   const upcomingTasks = filteredTasks.filter(t => t.dueDate > todayStr && t.status !== 'done');
-
-  // Metric 5: Recently Completed
   const completedTasks = filteredTasks.filter(t => t.status === 'done');
 
-  // All activities aggregated and sorted
   const allActivities = tasks
     .flatMap(t => t.activity.map(a => ({ ...a, taskTitle: t.title, task: t })))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-    .slice(0, 7);
+    .slice(0, 6);
 
-  // All open suggestions
   const openSuggestions = tasks
     .flatMap(t => t.suggestions.map(s => ({ ...s, taskTitle: t.title, taskId: t.id })))
     .filter(s => s.status === 'open')
@@ -75,37 +66,53 @@ export const DashboardView: React.FC = () => {
 
   return (
     <div id="dashboard-view" className="p-4 sm:p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Welcome & Quick Summary Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 text-white p-5 sm:p-6 rounded-2xl shadow-lg shadow-slate-950/10 border border-slate-800">
+      {/* Workspace Header & Action Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-xl border border-slate-200/90 shadow-2xs">
         <div>
-          <div className="flex items-center gap-2 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-1">
-            <span>Creative Tech Workspace</span>
-            <span>•</span>
+          <div className="flex items-center gap-2 text-zinc-500 text-[11px] font-semibold uppercase tracking-wider mb-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
             <span>Sprint Active</span>
+            <span>•</span>
+            <span>{currentUser.role} View</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-            Welcome back, {currentUser.name.split(' ')[0]}!
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
+            Welcome back, {currentUser.name.split(' ')[0]}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 mt-1">
-            You have <strong className="text-white">{myOpenTasks.length} tasks</strong> assigned to you, including{' '}
-            <strong className="text-rose-300">{overdueTasks.length} overdue</strong> and{' '}
-            <strong className="text-amber-300">{dueTodayTasks.length} due today</strong>.
+          <p className="text-xs sm:text-sm text-zinc-600 mt-1">
+            You have <span className="font-semibold text-zinc-900">{myOpenTasks.length} assigned tasks</span> across active projects, including{' '}
+            <span className="font-semibold text-rose-600">{overdueTasks.length} overdue</span> and{' '}
+            <span className="font-semibold text-amber-600">{dueTodayTasks.length} due today</span>.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsExportModalOpen(true)}
+            className="px-3 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-lg text-xs font-semibold border border-zinc-200 transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Export Team Workload to Excel or Manager PDF"
+          >
+            <Download className="w-3.5 h-3.5 text-zinc-600" />
+            <span>Export Report</span>
+          </button>
+          <button
+            onClick={() => setCurrentView('ai-assistant')}
+            className="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold border border-indigo-200/70 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Ask AI</span>
+          </button>
           <button
             onClick={() => setCurrentView('board')}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-lg text-xs font-semibold border border-zinc-200 transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <span>Open Board</span>
+            <span>Team Board</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setIsNewTaskModalOpen(true)}
-            className="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-sm shadow-blue-900/40 transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
-            <PlusCircle className="w-3.5 h-3.5" />
+            <Plus className="w-3.5 h-3.5" />
             <span>New Task</span>
           </button>
         </div>
@@ -116,94 +123,95 @@ export const DashboardView: React.FC = () => {
         {/* My Tasks */}
         <div
           onClick={() => setCurrentView('my-tasks')}
-          className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs hover:border-blue-500 dark:hover:border-blue-500 transition-all cursor-pointer group"
+          className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-zinc-400 transition-all cursor-pointer group"
         >
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-medium">My Tasks</span>
-            <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+          <div className="flex items-center justify-between text-zinc-500 mb-2">
+            <span className="text-xs font-medium text-zinc-600">My Tasks</span>
+            <CheckSquare className="w-4 h-4 text-zinc-700 group-hover:text-zinc-900 transition-colors" />
           </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          <div className="text-2xl font-bold font-mono text-zinc-900 tracking-tight">
             {myOpenTasks.length}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">{myTasks.length} total assigned</p>
+          <p className="text-[11px] text-zinc-500 mt-1">{myTasks.length} total assigned</p>
         </div>
 
         {/* Due Today */}
         <div
           onClick={() => setCurrentView('my-tasks')}
-          className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs hover:border-amber-500 dark:hover:border-amber-500 transition-all cursor-pointer group"
+          className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-amber-400 transition-all cursor-pointer group"
         >
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-medium">Due Today</span>
-            <Clock className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+          <div className="flex items-center justify-between text-zinc-500 mb-2">
+            <span className="text-xs font-medium text-zinc-600">Due Today</span>
+            <Clock className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+          <div className="text-2xl font-bold font-mono text-amber-600 tracking-tight">
             {dueTodayTasks.length}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Requires focus today</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Requires immediate attention</p>
         </div>
 
         {/* Overdue */}
         <div
           onClick={() => setCurrentView('my-tasks')}
-          className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs hover:border-rose-500 dark:hover:border-rose-500 transition-all cursor-pointer group"
+          className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-rose-400 transition-all cursor-pointer group"
         >
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-medium">Overdue</span>
-            <AlertCircle className="w-4 h-4 text-rose-500 group-hover:scale-110 transition-transform" />
+          <div className="flex items-center justify-between text-zinc-500 mb-2">
+            <span className="text-xs font-medium text-zinc-600">Overdue</span>
+            <AlertCircle className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">
+          <div className="text-2xl font-bold font-mono text-rose-600 tracking-tight">
             {overdueTasks.length}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Needs attention</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Needs resolution</p>
         </div>
 
         {/* Upcoming */}
         <div
           onClick={() => setCurrentView('calendar')}
-          className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs hover:border-blue-500 dark:hover:border-blue-500 transition-all cursor-pointer group"
+          className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-blue-400 transition-all cursor-pointer group"
         >
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-medium">Upcoming</span>
-            <Calendar className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" />
+          <div className="flex items-center justify-between text-zinc-500 mb-2">
+            <span className="text-xs font-medium text-zinc-600">Upcoming</span>
+            <Calendar className="w-4 h-4 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          <div className="text-2xl font-bold font-mono text-blue-600 tracking-tight">
             {upcomingTasks.length}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Scheduled for next days</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Scheduled for this sprint</p>
         </div>
 
         {/* Completed */}
         <div
           onClick={() => setCurrentView('board')}
-          className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-500 transition-all cursor-pointer group col-span-2 sm:col-span-1"
+          className="p-4 bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:border-emerald-400 transition-all cursor-pointer group col-span-2 sm:col-span-1"
         >
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-medium">Completed</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
+          <div className="flex items-center justify-between text-zinc-500 mb-2">
+            <span className="text-xs font-medium text-zinc-600">Completed</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          <div className="text-2xl font-bold font-mono text-emerald-600 tracking-tight">
             {completedTasks.length}
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Sprint velocity</p>
+          <p className="text-[11px] text-zinc-500 mt-1">Sprint velocity</p>
         </div>
       </div>
 
       {/* Main Grid: My Action Items & Team Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: My Urgent & Due Tasks */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 space-y-4">
-            <div className="flex items-center justify-between">
+        {/* Left 2 Cols: Priority Tasks */}
+        <div className="lg:col-span-2 space-y-5">
+          <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <CheckSquare className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                  My Priority Tasks
+                <CheckSquare className="w-4 h-4 text-zinc-700" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-800">
+                  Assigned to Me
                 </h3>
+                <span className="text-xs font-mono text-zinc-400 font-semibold">({myOpenTasks.length})</span>
               </div>
               <button
                 onClick={() => setCurrentView('my-tasks')}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center gap-1"
+                className="text-xs text-zinc-600 hover:text-zinc-900 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
               >
                 <span>View all</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -211,11 +219,11 @@ export const DashboardView: React.FC = () => {
             </div>
 
             {myOpenTasks.length === 0 ? (
-              <div className="text-center py-10 text-slate-400 text-xs">
-                🎉 All caught up! No open tasks assigned to you right now.
+              <div className="text-center py-12 text-zinc-400 text-xs">
+                No active tasks assigned to you right now.
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-slate-800/80">
+              <div className="divide-y divide-slate-100">
                 {myOpenTasks.map(task => {
                   const isOverdue = task.dueDate < todayStr;
                   const isDueToday = task.dueDate === todayStr;
@@ -224,22 +232,22 @@ export const DashboardView: React.FC = () => {
                     <div
                       key={task.id}
                       onClick={() => setSelectedTaskId(task.id)}
-                      className="py-3 px-2 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl cursor-pointer transition-colors group"
+                      className="py-3 px-2 flex items-center justify-between gap-3 hover:bg-zinc-50 rounded-lg cursor-pointer transition-colors group"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         <StatusBadge status={task.status} size="sm" />
                         <div className="min-w-0">
-                          <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                          <p className="text-xs font-semibold text-zinc-900 group-hover:text-blue-600 truncate">
                             {task.title}
                           </p>
-                          <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                          <div className="flex items-center gap-2 text-[11px] text-zinc-500 mt-0.5">
                             <span
                               className={`flex items-center gap-1 ${
                                 isOverdue
-                                  ? 'text-rose-600 dark:text-rose-400 font-semibold'
+                                  ? 'text-rose-600 font-semibold'
                                   : isDueToday
-                                  ? 'text-amber-600 dark:text-amber-400 font-semibold'
-                                  : ''
+                                  ? 'text-amber-600 font-semibold'
+                                  : 'text-zinc-500'
                               }`}
                             >
                               <Clock className="w-3 h-3" />
@@ -260,17 +268,15 @@ export const DashboardView: React.FC = () => {
 
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <PriorityBadge priority={task.priority} size="sm" />
-                        <div className="flex gap-1">
-                          {task.labels.slice(0, 1).map(l => (
-                            <span
-                              key={l.id}
-                              className={`hidden sm:inline-block px-2 py-0.5 text-[10px] font-medium rounded border ${l.color}`}
-                            >
-                              {l.name}
-                            </span>
-                          ))}
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+                        {task.labels.slice(0, 1).map(l => (
+                          <span
+                            key={l.id}
+                            className={`hidden sm:inline-block px-2 py-0.5 text-[10px] font-medium rounded-md border ${l.color}`}
+                          >
+                            {l.name}
+                          </span>
+                        ))}
+                        <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                       </div>
                     </div>
                   );
@@ -280,25 +286,25 @@ export const DashboardView: React.FC = () => {
           </div>
 
           {/* Open Suggestions Hub Preview */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 space-y-3">
-            <div className="flex items-center justify-between">
+          <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <Lightbulb className="w-4 h-4 text-amber-500" />
-                <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                  Recent Team Suggestions
+                <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-800">
+                  Open Suggestions & Reviews
                 </h3>
               </div>
               <button
                 onClick={() => setCurrentView('suggestions')}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold flex items-center gap-1"
+                className="text-xs text-zinc-600 hover:text-zinc-900 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
               >
-                <span>View Hub</span>
+                <span>View all</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             {openSuggestions.length === 0 ? (
-              <p className="text-xs text-slate-400 py-3 text-center">No open suggestions currently.</p>
+              <p className="text-xs text-zinc-400 py-3 text-center">No open suggestions currently.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {openSuggestions.map(sug => {
@@ -307,20 +313,20 @@ export const DashboardView: React.FC = () => {
                     <div
                       key={sug.id}
                       onClick={() => setSelectedTaskId(sug.taskId)}
-                      className="p-3 bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 rounded-xl hover:border-amber-400 transition-colors cursor-pointer text-xs space-y-1.5"
+                      className="p-3 bg-zinc-50 border border-zinc-200/80 rounded-lg hover:border-zinc-300 hover:bg-white transition-all cursor-pointer text-xs space-y-1.5 shadow-2xs"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
                           <Avatar user={author} size="xs" />
-                          <span className="font-semibold text-slate-900 dark:text-slate-100">
+                          <span className="font-semibold text-zinc-900 text-xs">
                             {author?.name}
                           </span>
                         </div>
-                        <span className="text-[10px] text-slate-400 truncate max-w-[100px]">
+                        <span className="text-[10px] text-zinc-500 truncate max-w-[110px]">
                           on {sug.taskTitle}
                         </span>
                       </div>
-                      <p className="text-slate-700 dark:text-slate-300 line-clamp-2 italic">
+                      <p className="text-zinc-700 line-clamp-2 italic text-xs">
                         "{sug.content}"
                       </p>
                     </div>
@@ -331,40 +337,40 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Col: Team Activity Stream & Members Online */}
-        <div className="space-y-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 space-y-4">
-            <div className="flex items-center justify-between">
+        {/* Right Col: Team Activity Stream & Workload */}
+        <div className="space-y-5">
+          <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <ActivityIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                  Recent Team Activity
+                <ActivityIcon className="w-4 h-4 text-zinc-700" />
+                <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-800">
+                  Recent Activity
                 </h3>
               </div>
               <button
                 onClick={() => setCurrentView('activity')}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                className="text-xs text-zinc-600 hover:text-zinc-900 font-semibold cursor-pointer"
               >
-                All
+                Log
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-2.5 text-xs">
               {allActivities.map(act => {
                 const user = getUserById(act.userId);
                 return (
                   <div
                     key={act.id}
                     onClick={() => act.taskId && setSelectedTaskId(act.taskId)}
-                    className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer transition-colors"
+                    className="flex items-start gap-2.5 p-2 rounded-md hover:bg-zinc-50 cursor-pointer transition-colors"
                   >
                     <Avatar user={user} size="xs" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-slate-800 dark:text-slate-200 leading-snug">
-                        <strong className="text-slate-900 dark:text-slate-100">{user?.name}</strong>{' '}
+                      <p className="text-zinc-800 leading-snug">
+                        <strong className="text-zinc-900 font-semibold">{user?.name}</strong>{' '}
                         {act.details}
                       </p>
-                      <span className="text-[10px] text-slate-400 mt-0.5 block">
+                      <span className="text-[10px] text-zinc-400 mt-0.5 block font-mono">
                         {new Date(act.timestamp).toLocaleTimeString([], {
                           hour: '2-digit',
                           minute: '2-digit'
@@ -377,15 +383,15 @@ export const DashboardView: React.FC = () => {
             </div>
           </div>
 
-          {/* Team Quick Workload Widget */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100">
+          {/* Team Workload Widget */}
+          <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-zinc-800">
                 Team Workload
               </h3>
               <button
                 onClick={() => setCurrentView('team')}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                className="text-xs text-zinc-600 hover:text-zinc-900 font-semibold cursor-pointer"
               >
                 Manage
               </button>
@@ -395,14 +401,14 @@ export const DashboardView: React.FC = () => {
               {users.map(u => {
                 const userTasks = tasks.filter(t => t.assigneeId === u.id && t.status !== 'done');
                 return (
-                  <div key={u.id} className="flex items-center justify-between text-xs">
+                  <div key={u.id} className="flex items-center justify-between text-xs py-1">
                     <div className="flex items-center gap-2">
                       <Avatar user={u} size="xs" />
-                      <span className="font-medium text-slate-800 dark:text-slate-200">
+                      <span className="font-medium text-zinc-800">
                         {u.name}
                       </span>
                     </div>
-                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 font-mono">
                       {userTasks.length} open
                     </span>
                   </div>
@@ -412,6 +418,13 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Export Report Modal */}
+      <ExportReportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+      />
     </div>
   );
 };
+
